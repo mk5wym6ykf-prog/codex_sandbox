@@ -6,41 +6,50 @@ The goal is to build V1 in small, safe steps. Each section should leave the app 
 
 ## 0. Project Safety
 
-- [ ] Read `AGENTS.md`.
-- [ ] Read `spec.md`.
-- [ ] Read `prompt_plan.md`.
-- [ ] Check Git status before making changes.
-- [ ] Note any existing uncommitted or untracked files.
-- [ ] Avoid committing unless explicitly requested.
-- [ ] Avoid pushing unless explicitly requested.
-- [ ] Avoid deleting files unless explicitly approved.
-- [ ] Avoid installing packages unless explicitly approved.
-- [ ] Keep each change small and reversible.
-- [ ] Run available checks after each meaningful step.
+- [x] Read `AGENTS.md`.
+- [x] Read `spec.md`.
+- [x] Read `prompt_plan.md`.
+- [x] Check Git status before making changes.
+- [x] Note any existing uncommitted or untracked files.
+- [x] Avoid committing unless explicitly requested.
+- [x] Avoid pushing unless explicitly requested.
+- [x] Avoid deleting files unless explicitly approved.
+- [x] Avoid installing packages unless explicitly approved.
+- [x] Keep each change small and reversible.
+- [x] Run available checks after each meaningful step.
+
+## 0.5 Git Checkpoints
+
+- [x] Commit initial app foundation: `9931dbb`.
+- [x] Commit npm lockfile: `7cf1d50`.
+- [x] Push recent commits to `origin/main`.
+- [ ] Decide whether to commit `todo.md` updates.
+- [ ] Add `.gitignore` for local generated files like `node_modules/`, `.pnpm-store/`, `.DS_Store`, and `dist/`.
 
 ## 1. Project Foundation
 
-- [ ] Choose the app stack.
-- [ ] Confirm whether a frontend app already exists.
-- [ ] If no app exists, create a Vite + React + TypeScript app.
-- [ ] Confirm the app runs locally.
-- [ ] Add a simple app shell.
-- [ ] Add a light-mode visual style.
-- [ ] Add responsive page structure.
-- [ ] Add a simple in-app view state.
-- [ ] Add Dashboard view placeholder.
-- [ ] Add Category Detail view placeholder.
-- [ ] Add Goal Form view placeholder.
-- [ ] Add Settings view placeholder.
-- [ ] Add Year-End Review view placeholder.
-- [ ] Add Import/Export view placeholder.
-- [ ] Add basic navigation between views.
-- [ ] Make Dashboard the first screen.
-- [ ] Confirm there is no login screen.
-- [ ] Confirm there is no backend code.
-- [ ] Confirm there is no cloud sync.
-- [ ] Confirm there is no AI coaching feature.
-- [ ] Run build or type-check.
+- [x] Choose the app stack: Vite + React + TypeScript.
+- [x] Confirm whether a frontend app already exists.
+- [x] Note that no frontend app files exist yet.
+- [x] If no app exists, create a Vite + React + TypeScript app.
+- [x] Confirm the app runs locally. Vite dev server started at `http://127.0.0.1:5173/`; sandboxed `curl` could not connect.
+- [x] Add a simple app shell.
+- [x] Add a light-mode visual style.
+- [x] Add responsive page structure.
+- [x] Add a simple in-app view state.
+- [x] Add Dashboard view placeholder.
+- [x] Add Category Detail view placeholder.
+- [x] Add Goal Form view placeholder.
+- [x] Add Settings view placeholder.
+- [x] Add Year-End Review view placeholder.
+- [x] Add Import/Export view placeholder.
+- [x] Add basic navigation between views.
+- [x] Make Dashboard the first screen.
+- [x] Confirm there is no login screen.
+- [x] Confirm there is no backend code.
+- [x] Confirm there is no cloud sync.
+- [x] Confirm there is no AI coaching feature.
+- [x] Run build or type-check. `npm run build` passed.
 
 ## 2. Data Model
 
@@ -372,6 +381,7 @@ The goal is to build V1 in small, safe steps. Each section should leave the app 
 ## 16. Import And Export
 
 - [ ] Add Import/Export view or Settings section.
+- [ ] Show privacy message: "Your data is stored on this device. Export a backup to keep a copy."
 - [ ] Export full JSON backup.
 - [ ] Include app version in JSON.
 - [ ] Include export timestamp in JSON.
@@ -510,6 +520,22 @@ The goal is to build V1 in small, safe steps. Each section should leave the app 
 - [ ] No horizontal scrolling is required.
 - [ ] Text does not overlap.
 - [ ] Long goal names do not break layout.
+- [ ] Run build or type-check.
+
+## 20.5 Visual Style
+
+- [ ] Use light mode only.
+- [ ] Create a subtle character-stats feeling.
+- [ ] Use progress rings where they help clarify scores.
+- [ ] Show category scores clearly.
+- [ ] Use a clear focus indicator.
+- [ ] Keep language factual and calm.
+- [ ] Avoid overly motivational copy.
+- [ ] Do not add XP.
+- [ ] Do not add badges.
+- [ ] Do not add streak rewards.
+- [ ] Do not add an achievement system.
+- [ ] Do not add heavy game mechanics.
 - [ ] Run build or type-check.
 
 ## 21. Accessibility Basics
@@ -665,3 +691,25 @@ Useful concepts to learn as they appear:
 - Build: a check that prepares the app for running in a browser.
 - Test: a repeatable check that helps catch mistakes.
 - Commit: a Git checkpoint that records a known version of files.
+
+## 28. V1 Out Of Scope Guardrails
+
+- [ ] Do not add user accounts or login.
+- [ ] Do not add cloud sync across devices.
+- [ ] Do not add AI coaching or AI-generated recommendations.
+- [ ] Do not add native iOS or Android app code.
+- [ ] Do not add PWA install or offline-app setup.
+- [ ] Do not add email or push notifications.
+- [ ] Do not add social sharing.
+- [ ] Do not add coach, partner, or family collaboration.
+- [ ] Do not add advanced analytics or trend dashboards.
+- [ ] Do not add a full guided monthly check-in flow.
+- [ ] Do not add complex journaling.
+- [ ] Do not add file attachments.
+- [ ] Do not add subtasks under milestones.
+- [ ] Do not add custom formulas.
+- [ ] Do not add multiple local user profiles.
+- [ ] Do not add import/export formats beyond JSON backup and one CSV summary.
+- [ ] Do not add payments or subscriptions.
+- [ ] Do not add a public marketing site.
+- [ ] Do not add deployment automation.
