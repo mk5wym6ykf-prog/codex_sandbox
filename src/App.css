@@ -30,6 +30,11 @@
   text-transform: uppercase;
 }
 
+.muted-copy {
+  color: #64748b;
+  margin: 8px 0 0;
+}
+
 .view-nav {
   display: flex;
   flex-wrap: wrap;
@@ -217,6 +222,23 @@ select {
   color: #64748b;
   display: block;
   margin-top: 3px;
+}
+
+.category-icon {
+  background: #eaf1fb;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  color: #334155;
+  display: inline-block;
+  font-size: 0.74rem;
+  font-weight: 700;
+  margin-right: 8px;
+  padding: 2px 6px;
+}
+
+.category-icon.large {
+  font-size: 0.88rem;
+  vertical-align: middle;
 }
 
 .color-dot {

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { createInitialAppData, getSelectedYear, type Category } from "./data/model";
 import "./App.css";
 
 type View =
@@ -8,25 +9,6 @@ type View =
   | "settings"
   | "year-end-review"
   | "import-export";
-
-type Category = {
-  id: string;
-  name: string;
-  color: string;
-  selfReflectionScore: number;
-};
-
-const categories: Category[] = [
-  { id: "health", name: "Health & Energy", color: "#2f9e44", selfReflectionScore: 6 },
-  { id: "emotional", name: "Emotional Wellbeing", color: "#4263eb", selfReflectionScore: 5 },
-  { id: "relationships", name: "Relationships & Connection", color: "#d6336c", selfReflectionScore: 7 },
-  { id: "career", name: "Career & Work", color: "#f08c00", selfReflectionScore: 6 },
-  { id: "money", name: "Money & Security", color: "#0ca678", selfReflectionScore: 4 },
-  { id: "growth", name: "Personal Growth", color: "#7048e8", selfReflectionScore: 7 },
-  { id: "home", name: "Home & Environment", color: "#5c940d", selfReflectionScore: 6 },
-  { id: "purpose", name: "Purpose & Meaning", color: "#1864ab", selfReflectionScore: 5 },
-  { id: "fun", name: "Fun & Recreation", color: "#e67700", selfReflectionScore: 6 },
-];
 
 const viewLabels: Record<View, string> = {
   dashboard: "Dashboard",
@@ -38,6 +20,9 @@ const viewLabels: Record<View, string> = {
 };
 
 function App() {
+  const [appData] = useState(() => createInitialAppData());
+  const selectedYear = getSelectedYear(appData);
+  const categories = [...selectedYear.categories].sort((first, second) => first.order - second.order);
   const [activeView, setActiveView] = useState<View>("dashboard");
   const [selectedCategoryId, setSelectedCategoryId] = useState(categories[0].id);
 
@@ -53,7 +38,7 @@ function App() {
     <div className="app">
       <header className="app-header">
         <div>
-          <p className="eyebrow">2026 planning year</p>
+          <p className="eyebrow">{selectedYear.year} planning year</p>
           <h1>Life Wheel Goals</h1>
         </div>
         <nav className="view-nav" aria-label="Main views">
@@ -72,7 +57,12 @@ function App() {
 
       <main>
         {activeView === "dashboard" && (
-          <Dashboard onAddGoal={() => setActiveView("goal-form")} onOpenCategory={openCategory} />
+          <Dashboard
+            categories={categories}
+            onAddGoal={() => setActiveView("goal-form")}
+            onOpenCategory={openCategory}
+            selectedYear={selectedYear.year}
+          />
         )}
         {activeView === "category-detail" && (
           <CategoryDetail
@@ -83,6 +73,7 @@ function App() {
         )}
         {activeView === "goal-form" && (
           <GoalForm
+            categories={categories}
             selectedCategory={selectedCategory}
             onCancel={() => setActiveView("dashboard")}
             onSave={() => setActiveView("category-detail")}
@@ -97,11 +88,15 @@ function App() {
 }
 
 function Dashboard({
+  categories,
   onAddGoal,
   onOpenCategory,
+  selectedYear,
 }: {
+  categories: Category[];
   onAddGoal: () => void;
   onOpenCategory: (categoryId: string) => void;
+  selectedYear: number;
 }) {
   return (
     <section className="view-grid" aria-labelledby="dashboard-title">
@@ -109,6 +104,7 @@ function Dashboard({
         <div className="section-heading">
           <p className="eyebrow">Dashboard</p>
           <h2 id="dashboard-title">Current life wheel</h2>
+          <p className="muted-copy">Showing {selectedYear} with {categories.length} default categories.</p>
         </div>
         <div className="score-layout">
           <div className="wheel-preview" aria-label="Two-ring life wheel preview">
@@ -151,7 +147,12 @@ function Dashboard({
             >
               <span className="color-dot" style={{ backgroundColor: category.color }} />
               <span>
-                <strong>{category.name}</strong>
+                <strong>
+                  <span aria-hidden="true" className="category-icon">
+                    {category.icon}
+                  </span>
+                  {category.name}
+                </strong>
                 <small>No goals yet</small>
               </span>
               <span className="category-score">
@@ -182,7 +183,12 @@ function CategoryDetail({
       <div className="content-panel">
         <div className="section-heading">
           <p className="eyebrow">Category Detail</p>
-          <h2 id="category-title">{category.name}</h2>
+          <h2 id="category-title">
+            <span aria-hidden="true" className="category-icon large">
+              {category.icon}
+            </span>
+            {category.name}
+          </h2>
         </div>
         <div className="stats-grid">
           <Stat label="Goal/KPI score" value="No goals yet" />
@@ -202,10 +208,12 @@ function CategoryDetail({
 }
 
 function GoalForm({
+  categories,
   selectedCategory,
   onCancel,
   onSave,
 }: {
+  categories: Category[];
   selectedCategory: Category;
   onCancel: () => void;
   onSave: () => void;
