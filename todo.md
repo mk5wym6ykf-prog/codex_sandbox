@@ -22,6 +22,7 @@ The goal is to build V1 in small, safe steps. Each section should leave the app 
 
 - [x] Commit initial app foundation: `9931dbb`.
 - [x] Commit npm lockfile: `7cf1d50`.
+- [x] Commit core app data model: `3232da6`.
 - [x] Push recent commits to `origin/main`.
 - [ ] Decide whether to commit `todo.md` updates.
 - [ ] Add `.gitignore` for local generated files like `node_modules/`, `.pnpm-store/`, `.DS_Store`, and `dist/`.
@@ -53,35 +54,35 @@ The goal is to build V1 in small, safe steps. Each section should leave the app 
 
 ## 2. Data Model
 
-- [ ] Create shared app data types.
-- [ ] Add `AppData` type.
-- [ ] Add `Settings` type.
-- [ ] Add `Year` type.
-- [ ] Add `Category` type.
-- [ ] Add `Goal` type.
-- [ ] Add `Milestone` type.
-- [ ] Add `ProgressUpdate` type.
-- [ ] Add `Snapshot` type.
-- [ ] Add `YearEndReview` type if useful.
-- [ ] Add goal status options.
-- [ ] Add goal priority options.
-- [ ] Add goal type options.
-- [ ] Add habit tracking period options.
-- [ ] Add metric direction options.
-- [ ] Add stable ID helper.
+- [x] Create shared app data types.
+- [x] Add `AppData` type.
+- [x] Add `Settings` type.
+- [x] Add `Year` type.
+- [x] Add `Category` type.
+- [x] Add `Goal` type.
+- [x] Add `Milestone` type.
+- [x] Add `ProgressUpdate` type.
+- [x] Add `Snapshot` type.
+- [x] Add `YearEndReview` type if useful.
+- [x] Add goal status options.
+- [x] Add goal priority options.
+- [x] Add goal type options.
+- [x] Add habit tracking period options.
+- [x] Add metric direction options.
+- [x] Add stable ID helper.
 - [ ] Add timestamp helper.
-- [ ] Add app version constant.
-- [ ] Add default color palette.
-- [ ] Add default icon set.
-- [ ] Add default categories from the spec.
-- [ ] Ensure default category names are unique.
-- [ ] Ensure default colors are unique.
-- [ ] Ensure default icons are unique.
-- [ ] Add helper to create a new year.
-- [ ] Add helper to create first-launch app data.
-- [ ] Wire Dashboard to display selected year.
-- [ ] Wire Dashboard to display categories from data.
-- [ ] Run build or type-check.
+- [x] Add app version constant.
+- [x] Add default color palette.
+- [x] Add default icon set.
+- [x] Add default categories from the spec.
+- [x] Ensure default category names are unique.
+- [x] Ensure default colors are unique.
+- [x] Ensure default icons are unique.
+- [x] Add helper to create a new year.
+- [x] Add helper to create first-launch app data.
+- [x] Wire Dashboard to display selected year.
+- [x] Wire Dashboard to display categories from data.
+- [x] Run build or type-check. `npm run build` passed.
 
 ## 3. Local Storage
 
