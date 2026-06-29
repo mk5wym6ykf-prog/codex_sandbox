@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getSelectedYear, type Category } from "./data/model";
+import { getSelectedYear, type Category, type Year } from "./data/model";
 import { calculateYearScores, type CategoryScore } from "./data/scoring";
 import { loadAppData, saveAppData } from "./data/storage";
 import "./App.css";
@@ -73,8 +73,12 @@ function App() {
       <main>
         {activeView === "dashboard" && (
           <Dashboard
+            backupRemindersEnabled={appData.settings.backupRemindersEnabled}
             categories={categories}
+            hasAnyGoals={selectedYear.goals.length > 0}
+            hasCurrentMonthSnapshot={hasCurrentMonthSnapshot(selectedYear)}
             onAddGoal={() => setActiveView("goal-form")}
+            onOpenImportExport={() => setActiveView("import-export")}
             onOpenCategory={openCategory}
             selectedYear={selectedYear.year}
             yearScores={yearScores}
@@ -104,14 +108,22 @@ function App() {
 }
 
 function Dashboard({
+  backupRemindersEnabled,
   categories,
+  hasAnyGoals,
+  hasCurrentMonthSnapshot,
   onAddGoal,
+  onOpenImportExport,
   onOpenCategory,
   selectedYear,
   yearScores,
 }: {
+  backupRemindersEnabled: boolean;
   categories: Category[];
+  hasAnyGoals: boolean;
+  hasCurrentMonthSnapshot: boolean;
   onAddGoal: () => void;
+  onOpenImportExport: () => void;
   onOpenCategory: (categoryId: string) => void;
   selectedYear: number;
   yearScores: {
@@ -122,6 +134,14 @@ function Dashboard({
   const categoryScoreById = new Map(
     yearScores.categoryScores.map((score) => [score.categoryId, score]),
   );
+  const wheelScores = categories.map((category) => {
+    const categoryScore = categoryScoreById.get(category.id);
+
+    return {
+      category,
+      score: categoryScore?.goalKpiScore ?? categoryScore?.selfReflectionScore ?? category.selfReflectionScore,
+    };
+  });
   const focusCategory = getFocusCategory(categories, yearScores.categoryScores);
   const alsoWatchCategories = getAlsoWatchCategories(categories, yearScores.categoryScores);
 
@@ -130,35 +150,65 @@ function Dashboard({
       <div className="hero-panel">
         <div className="section-heading">
           <p className="eyebrow">Dashboard</p>
-          <h2 id="dashboard-title">Current life wheel</h2>
+          <div className="dashboard-title-row">
+            <h2 id="dashboard-title">Current life wheel</h2>
+            <label className="year-control">
+              Planning year
+              <select aria-label="Selected planning year" disabled value={selectedYear}>
+                <option value={selectedYear}>{selectedYear}</option>
+              </select>
+            </label>
+          </div>
           <p className="muted-copy">
             Showing {selectedYear} with {categories.length} default categories.
           </p>
         </div>
         <div className="score-layout">
-          <div className="wheel-preview" aria-label="Two-ring life wheel preview">
-            <div className="wheel-ring outer-ring">
-              <div className="wheel-ring inner-ring">
-                <span>{formatScore(yearScores.overallLifeScore)}</span>
-              </div>
-            </div>
-          </div>
+          <LifeWheelPreview overallScore={yearScores.overallLifeScore} scores={wheelScores} />
           <div className="score-summary">
             <p className="score-label">Overall life score</p>
             <strong>{formatScore(yearScores.overallLifeScore)} / 10</strong>
             <p>Main focus: {focusCategory?.name ?? "No focus yet"}</p>
-            <p>
-              Also watch:{" "}
-              {alsoWatchCategories.length > 0
-                ? alsoWatchCategories.map((category) => category.name).join(", ")
-                : "None yet"}
-            </p>
+            <div>
+              <p className="score-label">Also watch</p>
+              {alsoWatchCategories.length > 0 ? (
+                <ul className="watch-list">
+                  {alsoWatchCategories.map((category) => (
+                    <li key={category.id}>{category.name}</li>
+                  ))}
+                </ul>
+              ) : (
+                <p>None yet</p>
+              )}
+            </div>
           </div>
         </div>
         <label className="search-label" htmlFor="goal-search">
           Search selected year
         </label>
         <input id="goal-search" type="search" placeholder="Search goals, categories, or statuses" />
+        {backupRemindersEnabled && (
+          <div className="backup-reminder">
+            <div>
+              <strong>Backup reminder</strong>
+              <p>Backups will help keep a copy of your local data when export tools are connected.</p>
+            </div>
+            <button className="secondary-button" onClick={onOpenImportExport} type="button">
+              Review backup options
+            </button>
+          </div>
+        )}
+        {!hasCurrentMonthSnapshot && (
+          <div className="snapshot-prompt">
+            <div>
+              <strong>Save this month&apos;s snapshot</strong>
+              <p>Snapshot saving will be connected in a later step.</p>
+            </div>
+            <button className="secondary-button" type="button">
+              Save snapshot
+            </button>
+          </div>
+        )}
       </div>
 
       <div className="content-panel">
@@ -171,6 +221,15 @@ function Dashboard({
             Add your first goal
           </button>
         </div>
+        {!hasAnyGoals && (
+          <div className="empty-state dashboard-empty">
+            <h3>No goals yet</h3>
+            <p>Start with one goal in one category. You can add more later.</p>
+            <button className="primary-button" onClick={onAddGoal} type="button">
+              Add your first goal
+            </button>
+          </div>
+        )}
         <div className="category-list">
           {categories.map((category) => (
             <CategoryRow
@@ -183,6 +242,91 @@ function Dashboard({
         </div>
       </div>
     </section>
+  );
+}
+
+function LifeWheelPreview({
+  overallScore,
+  scores,
+}: {
+  overallScore: number;
+  scores: {
+    category: Category;
+    score: number;
+  }[];
+}) {
+  const center = 150;
+  const chartRadius = 72;
+  const labelRadius = 117;
+  const gradeRadius = 99;
+  const segmentRadius = 132;
+  const segmentLength = 18;
+  const points = scores.map(({ score }, index) => {
+    const angle = getWheelAngle(index, scores.length);
+    const radius = (Math.max(0, Math.min(score, 10)) / 10) * chartRadius;
+
+    return getWheelPoint(center, center, radius, angle);
+  });
+
+  return (
+    <div className="wheel-preview" aria-label={`Life wheel score ${formatScore(overallScore)} out of 10`}>
+      <svg className="life-wheel" viewBox="0 0 300 300" role="img">
+        <title>Life wheel category scores</title>
+        <circle className="wheel-outer-track" cx={center} cy={center} r={segmentRadius} />
+        <circle className="wheel-chart-boundary" cx={center} cy={center} r={chartRadius} />
+        {[0.25, 0.5, 0.75].map((scale) => (
+          <circle
+            className="wheel-grid-ring"
+            cx={center}
+            cy={center}
+            key={scale}
+            r={chartRadius * scale}
+          />
+        ))}
+        {scores.map(({ category, score }, index) => {
+          const angle = getWheelAngle(index, scores.length);
+          const spokeEnd = getWheelPoint(center, center, chartRadius, angle);
+          const labelPoint = getWheelPoint(center, center, labelRadius, angle);
+          const gradePoint = getWheelPoint(center, center, gradeRadius, angle);
+          const segmentStart = getWheelPoint(center, center, segmentRadius - segmentLength, angle);
+          const segmentEnd = getWheelPoint(center, center, segmentRadius, angle);
+
+          return (
+            <g key={category.id}>
+              <line
+                className="wheel-segment"
+                stroke={category.color}
+                x1={segmentStart.x}
+                x2={segmentEnd.x}
+                y1={segmentStart.y}
+                y2={segmentEnd.y}
+              />
+              <line className="wheel-spoke" x1={center} x2={spokeEnd.x} y1={center} y2={spokeEnd.y} />
+              <text
+                className="wheel-label"
+                textAnchor="middle"
+                transform={`rotate(${angle + 90} ${labelPoint.x} ${labelPoint.y})`}
+                x={labelPoint.x}
+                y={labelPoint.y}
+              >
+                {getWheelLabel(category.name)}
+              </text>
+              <text className="wheel-grade" textAnchor="middle" x={gradePoint.x} y={gradePoint.y}>
+                {getScoreGrade(score)}
+              </text>
+            </g>
+          );
+        })}
+        <polygon className="wheel-score-polygon" points={points.map((point) => `${point.x},${point.y}`).join(" ")} />
+        {points.map((point, index) => (
+          <circle className="wheel-score-point" cx={point.x} cy={point.y} key={scores[index].category.id} r="3" />
+        ))}
+        <line className="wheel-center-line" x1={center} x2={center} y1={center - chartRadius} y2={center + chartRadius} />
+        <text className="wheel-center-score" textAnchor="middle" x={center} y={center + 6}>
+          {formatScore(overallScore)}
+        </text>
+      </svg>
+    </div>
   );
 }
 
@@ -229,6 +373,48 @@ function formatScore(score: number) {
   return score.toFixed(1);
 }
 
+function getWheelAngle(index: number, total: number) {
+  return (360 / total) * index - 90;
+}
+
+function getWheelPoint(centerX: number, centerY: number, radius: number, angleDegrees: number) {
+  const angleRadians = (angleDegrees * Math.PI) / 180;
+
+  return {
+    x: centerX + radius * Math.cos(angleRadians),
+    y: centerY + radius * Math.sin(angleRadians),
+  };
+}
+
+function getWheelLabel(name: string) {
+  return name
+    .split(" ")
+    .filter((word) => word !== "&")
+    .slice(0, 2)
+    .map((word) => word.slice(0, 4).toUpperCase())
+    .join(" ");
+}
+
+function getScoreGrade(score: number) {
+  if (score >= 8.5) {
+    return "A";
+  }
+
+  if (score >= 7) {
+    return "B";
+  }
+
+  if (score >= 5.5) {
+    return "C";
+  }
+
+  if (score >= 4) {
+    return "D";
+  }
+
+  return "E";
+}
+
 function getFocusCategory(categories: Category[], categoryScores: CategoryScore[]) {
   return sortCategoriesByScore(categories, categoryScores)[0];
 }
@@ -244,6 +430,14 @@ function sortCategoriesByScore(categories: Category[], categoryScores: CategoryS
 
   return [...categories].sort((first, second) => {
     return (categoryScoreById.get(first.id) ?? 10) - (categoryScoreById.get(second.id) ?? 10);
+  });
+}
+
+function hasCurrentMonthSnapshot(year: Year, currentDate = new Date()) {
+  const currentMonthKey = currentDate.toISOString().slice(0, 7);
+
+  return year.snapshots.some((snapshot) => {
+    return snapshot.type === "monthly" && snapshot.date.slice(0, 7) === currentMonthKey;
   });
 }
 

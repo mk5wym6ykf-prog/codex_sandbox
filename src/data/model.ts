@@ -193,7 +193,7 @@ export function createInitialAppData(currentDate = new Date()): AppData {
 }
 
 export function createDefaultYear(year: number, currentDate = new Date()): Year {
-  const now = currentDate.toISOString();
+  const now = createTimestamp(currentDate);
   const yearId = createYearId(year);
 
   return {
@@ -225,6 +225,10 @@ export function getSelectedYear(appData: AppData): Year {
   return (
     appData.years.find((year) => year.year === appData.settings.selectedYear) ?? appData.years[0]
   );
+}
+
+export function createTimestamp(date = new Date()) {
+  return date.toISOString();
 }
 
 function createYearId(year: number) {

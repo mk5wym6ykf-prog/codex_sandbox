@@ -12,7 +12,7 @@ Track which numbered prompts from `prompt_plan.md` have been run.
 - [x] Prompt 2: Data Model And Defaults.
 - [x] Prompt 3: Local Storage Persistence.
 - [x] Prompt 4: Scoring Engine.
-- [ ] Prompt 5: Dashboard And Accessible Category List.
+- [x] Prompt 5: Dashboard And Accessible Category List.
 - [ ] Prompt 6: Two-Ring Life Wheel.
 - [ ] Prompt 7: Category Detail View.
 - [ ] Prompt 8: Goal Creation For Metric Goals.
@@ -93,7 +93,7 @@ Track which numbered prompts from `prompt_plan.md` have been run.
 - [x] Add habit tracking period options.
 - [x] Add metric direction options.
 - [x] Add stable ID helper.
-- [ ] Add timestamp helper.
+- [x] Add timestamp helper.
 - [x] Add app version constant.
 - [x] Add default color palette.
 - [x] Add default icon set.
@@ -156,29 +156,29 @@ Track which numbered prompts from `prompt_plan.md` have been run.
 
 ## 5. Dashboard
 
-- [ ] Show selected year.
-- [ ] Add year selector placeholder or control.
-- [ ] Add search input.
-- [ ] Show overall life score.
-- [ ] Show two-ring wheel placeholder if wheel is not built yet.
-- [ ] Show main focus category.
-- [ ] Show up to two also-watch categories.
-- [ ] Show category list.
-- [ ] Show each category name.
-- [ ] Show each category icon.
-- [ ] Show each category color.
-- [ ] Show each category goal/KPI score.
-- [ ] Show each category self-reflection score.
-- [ ] Show no-goals state for categories without goals.
-- [ ] Show empty state when no goals exist.
-- [ ] Add "Add your first goal" button.
-- [ ] Add monthly snapshot prompt if needed.
-- [ ] Add backup reminder banner placeholder if needed.
-- [ ] Make category list items clickable.
-- [ ] Open Category Detail when a category is clicked.
-- [ ] Open Goal Form when "Add your first goal" is clicked.
-- [ ] Confirm mobile layout stacks cleanly.
-- [ ] Run build or type-check.
+- [x] Show selected year.
+- [x] Add year selector placeholder or control.
+- [x] Add search input.
+- [x] Show overall life score.
+- [x] Show two-ring wheel placeholder if wheel is not built yet.
+- [x] Show main focus category.
+- [x] Show up to two also-watch categories.
+- [x] Show category list.
+- [x] Show each category name.
+- [x] Show each category icon.
+- [x] Show each category color.
+- [x] Show each category goal/KPI score.
+- [x] Show each category self-reflection score.
+- [x] Show no-goals state for categories without goals.
+- [x] Show empty state when no goals exist.
+- [x] Add "Add your first goal" button.
+- [x] Add monthly snapshot prompt if needed.
+- [x] Add backup reminder banner placeholder if needed.
+- [x] Make category list items clickable.
+- [x] Open Category Detail when a category is clicked.
+- [x] Open Goal Form when "Add your first goal" is clicked.
+- [x] Confirm mobile layout stacks cleanly.
+- [x] Run build or type-check. `npm run build` passed.
 
 ## 6. Two-Ring Life Wheel
 
