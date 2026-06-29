@@ -3,6 +3,16 @@
   padding: 32px;
 }
 
+.storage-warning {
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: 8px;
+  color: #9a3412;
+  margin: 0 auto 18px;
+  max-width: 1180px;
+  padding: 12px 14px;
+}
+
 .app-header {
   align-items: flex-start;
   display: flex;

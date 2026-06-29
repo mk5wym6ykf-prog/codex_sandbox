@@ -4,6 +4,29 @@ Use this checklist alongside `spec.md` and `prompt_plan.md`.
 
 The goal is to build V1 in small, safe steps. Each section should leave the app in a working state before moving on.
 
+## Prompt Run Tracker
+
+Track which numbered prompts from `prompt_plan.md` have been run.
+
+- [x] Prompt 1: Project Foundation.
+- [x] Prompt 2: Data Model And Defaults.
+- [x] Prompt 3: Local Storage Persistence.
+- [ ] Prompt 4: Scoring Engine.
+- [ ] Prompt 5: Dashboard And Accessible Category List.
+- [ ] Prompt 6: Two-Ring Life Wheel.
+- [ ] Prompt 7: Category Detail View.
+- [ ] Prompt 8: Goal Creation For Metric Goals.
+- [ ] Prompt 9: Add Habit, Milestone, And Reflection Goals.
+- [ ] Prompt 10: Progress Updates And Quick Controls.
+- [ ] Prompt 11: Milestone Management And Suggestions.
+- [ ] Prompt 12: Search.
+- [ ] Prompt 13: Category Settings.
+- [ ] Prompt 14: Years And Rollover.
+- [ ] Prompt 15: Import, Export, CSV, And Backup Reminders.
+- [ ] Prompt 16: Archive, Delete, And Danger Zone.
+- [ ] Prompt 17: Year-End Review.
+- [ ] Prompt 18: Final Integration And QA.
+
 ## 0. Project Safety
 
 - [x] Read `AGENTS.md`.
@@ -86,21 +109,21 @@ The goal is to build V1 in small, safe steps. Each section should leave the app 
 
 ## 3. Local Storage
 
-- [ ] Create storage utility module.
-- [ ] Add local storage key constant.
-- [ ] Load saved data on app startup.
-- [ ] Seed default data when no saved data exists.
-- [ ] Save data after user-facing changes.
-- [ ] Validate basic saved data shape before using it.
-- [ ] Fall back safely if saved data is broken.
-- [ ] Avoid crashing on malformed local storage data.
-- [ ] Preserve `appVersion`.
-- [ ] Preserve `settings`.
-- [ ] Preserve all years.
-- [ ] Add a beginner-friendly error fallback if data cannot load.
+- [x] Create storage utility module.
+- [x] Add local storage key constant.
+- [x] Load saved data on app startup.
+- [x] Seed default data when no saved data exists.
+- [x] Save data after user-facing changes.
+- [x] Validate basic saved data shape before using it.
+- [x] Fall back safely if saved data is broken.
+- [x] Avoid crashing on malformed local storage data.
+- [x] Preserve `appVersion`.
+- [x] Preserve `settings`.
+- [x] Preserve all years.
+- [x] Add a beginner-friendly error fallback if data cannot load.
 - [ ] Manually test first launch.
 - [ ] Manually test refresh keeps data.
-- [ ] Run build or type-check.
+- [x] Run build or type-check. `npm run build` passed.
 
 ## 4. Scoring Engine
 

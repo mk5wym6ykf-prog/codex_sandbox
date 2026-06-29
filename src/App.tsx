@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { createInitialAppData, getSelectedYear, type Category } from "./data/model";
+import { useEffect, useState } from "react";
+import { getSelectedYear, type Category } from "./data/model";
+import { loadAppData, saveAppData } from "./data/storage";
 import "./App.css";
 
 type View =
@@ -20,9 +21,12 @@ const viewLabels: Record<View, string> = {
 };
 
 function App() {
-  const [appData] = useState(() => createInitialAppData());
+  const [storageLoad] = useState(() => loadAppData());
+  const [appData] = useState(storageLoad.appData);
   const selectedYear = getSelectedYear(appData);
-  const categories = [...selectedYear.categories].sort((first, second) => first.order - second.order);
+  const categories = [...selectedYear.categories].sort(
+    (first, second) => first.order - second.order,
+  );
   const [activeView, setActiveView] = useState<View>("dashboard");
   const [selectedCategoryId, setSelectedCategoryId] = useState(categories[0].id);
 
@@ -34,8 +38,17 @@ function App() {
     setActiveView("category-detail");
   }
 
+  useEffect(() => {
+    saveAppData(appData);
+  }, [appData]);
+
   return (
     <div className="app">
+      {storageLoad.status === "recovered" && (
+        <div className="storage-warning" role="status">
+          Saved data could not be loaded, so the app started with fresh default data.
+        </div>
+      )}
       <header className="app-header">
         <div>
           <p className="eyebrow">{selectedYear.year} planning year</p>
@@ -104,7 +117,9 @@ function Dashboard({
         <div className="section-heading">
           <p className="eyebrow">Dashboard</p>
           <h2 id="dashboard-title">Current life wheel</h2>
-          <p className="muted-copy">Showing {selectedYear} with {categories.length} default categories.</p>
+          <p className="muted-copy">
+            Showing {selectedYear} with {categories.length} default categories.
+          </p>
         </div>
         <div className="score-layout">
           <div className="wheel-preview" aria-label="Two-ring life wheel preview">
