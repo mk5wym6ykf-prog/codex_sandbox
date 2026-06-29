@@ -11,7 +11,7 @@ Track which numbered prompts from `prompt_plan.md` have been run.
 - [x] Prompt 1: Project Foundation.
 - [x] Prompt 2: Data Model And Defaults.
 - [x] Prompt 3: Local Storage Persistence.
-- [ ] Prompt 4: Scoring Engine.
+- [x] Prompt 4: Scoring Engine.
 - [ ] Prompt 5: Dashboard And Accessible Category List.
 - [ ] Prompt 6: Two-Ring Life Wheel.
 - [ ] Prompt 7: Category Detail View.
@@ -127,32 +127,32 @@ Track which numbered prompts from `prompt_plan.md` have been run.
 
 ## 4. Scoring Engine
 
-- [ ] Create scoring utility module.
-- [ ] Add clamp helper.
-- [ ] Add priority weight helper.
-- [ ] Calculate metric goal progress for increasing goals with starting value.
-- [ ] Calculate metric goal progress for increasing goals without starting value.
-- [ ] Calculate metric goal progress for decreasing goals.
-- [ ] Clamp metric progress between 0 and 1.
-- [ ] Calculate habit period progress.
-- [ ] Ignore future habit periods.
-- [ ] Average completed habit periods only.
-- [ ] Return 0 when a habit has no completed periods.
-- [ ] Calculate milestone goal progress.
-- [ ] Return 0 when a milestone goal has no milestones.
-- [ ] Calculate reflection goal progress.
-- [ ] Return 0 when reflection target equals starting rating.
-- [ ] Calculate completed goals as 100%.
-- [ ] Count paused goals based on effort so far.
-- [ ] Include archived goals only when `countsTowardScore` is true.
-- [ ] Ensure overdue goals do not reduce score.
-- [ ] Calculate category goal/KPI score using priority weights.
-- [ ] Return no goal/KPI score when a category has no scoring goals.
-- [ ] Use self-reflection fallback for overall score.
-- [ ] Calculate overall life score with equal ring weighting.
-- [ ] Add sample data checks or tests.
-- [ ] Wire Dashboard score display to scoring utilities.
-- [ ] Run build or type-check.
+- [x] Create scoring utility module.
+- [x] Add clamp helper.
+- [x] Add priority weight helper.
+- [x] Calculate metric goal progress for increasing goals with starting value.
+- [x] Calculate metric goal progress for increasing goals without starting value.
+- [x] Calculate metric goal progress for decreasing goals.
+- [x] Clamp metric progress between 0 and 1.
+- [x] Calculate habit period progress.
+- [x] Ignore future habit periods.
+- [x] Average completed habit periods only.
+- [x] Return 0 when a habit has no completed periods.
+- [x] Calculate milestone goal progress.
+- [x] Return 0 when a milestone goal has no milestones.
+- [x] Calculate reflection goal progress.
+- [x] Return 0 when reflection target equals starting rating.
+- [x] Calculate completed goals as 100%.
+- [x] Count paused goals based on effort so far.
+- [x] Include archived goals only when `countsTowardScore` is true.
+- [x] Ensure overdue goals do not reduce score.
+- [x] Calculate category goal/KPI score using priority weights.
+- [x] Return no goal/KPI score when a category has no scoring goals.
+- [x] Use self-reflection fallback for overall score.
+- [x] Calculate overall life score with equal ring weighting.
+- [x] Add sample data checks or tests.
+- [x] Wire Dashboard score display to scoring utilities.
+- [x] Run build or type-check. `npm run build` passed.
 
 ## 5. Dashboard
 

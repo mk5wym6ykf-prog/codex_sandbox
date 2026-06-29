@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getSelectedYear, type Category } from "./data/model";
+import { calculateYearScores, type CategoryScore } from "./data/scoring";
 import { loadAppData, saveAppData } from "./data/storage";
 import "./App.css";
 
@@ -27,6 +28,7 @@ function App() {
   const categories = [...selectedYear.categories].sort(
     (first, second) => first.order - second.order,
   );
+  const yearScores = calculateYearScores(selectedYear);
   const [activeView, setActiveView] = useState<View>("dashboard");
   const [selectedCategoryId, setSelectedCategoryId] = useState(categories[0].id);
 
@@ -75,6 +77,7 @@ function App() {
             onAddGoal={() => setActiveView("goal-form")}
             onOpenCategory={openCategory}
             selectedYear={selectedYear.year}
+            yearScores={yearScores}
           />
         )}
         {activeView === "category-detail" && (
@@ -105,12 +108,23 @@ function Dashboard({
   onAddGoal,
   onOpenCategory,
   selectedYear,
+  yearScores,
 }: {
   categories: Category[];
   onAddGoal: () => void;
   onOpenCategory: (categoryId: string) => void;
   selectedYear: number;
+  yearScores: {
+    categoryScores: CategoryScore[];
+    overallLifeScore: number;
+  };
 }) {
+  const categoryScoreById = new Map(
+    yearScores.categoryScores.map((score) => [score.categoryId, score]),
+  );
+  const focusCategory = getFocusCategory(categories, yearScores.categoryScores);
+  const alsoWatchCategories = getAlsoWatchCategories(categories, yearScores.categoryScores);
+
   return (
     <section className="view-grid" aria-labelledby="dashboard-title">
       <div className="hero-panel">
@@ -125,15 +139,20 @@ function Dashboard({
           <div className="wheel-preview" aria-label="Two-ring life wheel preview">
             <div className="wheel-ring outer-ring">
               <div className="wheel-ring inner-ring">
-                <span>5.8</span>
+                <span>{formatScore(yearScores.overallLifeScore)}</span>
               </div>
             </div>
           </div>
           <div className="score-summary">
             <p className="score-label">Overall life score</p>
-            <strong>5.8 / 10</strong>
-            <p>Main focus: Money & Security</p>
-            <p>Also watch: Emotional Wellbeing, Purpose & Meaning</p>
+            <strong>{formatScore(yearScores.overallLifeScore)} / 10</strong>
+            <p>Main focus: {focusCategory?.name ?? "No focus yet"}</p>
+            <p>
+              Also watch:{" "}
+              {alsoWatchCategories.length > 0
+                ? alsoWatchCategories.map((category) => category.name).join(", ")
+                : "None yet"}
+            </p>
           </div>
         </div>
         <label className="search-label" htmlFor="goal-search">
@@ -154,31 +173,78 @@ function Dashboard({
         </div>
         <div className="category-list">
           {categories.map((category) => (
-            <button
-              className="category-row"
+            <CategoryRow
+              category={category}
+              categoryScore={categoryScoreById.get(category.id)}
               key={category.id}
-              onClick={() => onOpenCategory(category.id)}
-              type="button"
-            >
-              <span className="color-dot" style={{ backgroundColor: category.color }} />
-              <span>
-                <strong>
-                  <span aria-hidden="true" className="category-icon">
-                    {category.icon}
-                  </span>
-                  {category.name}
-                </strong>
-                <small>No goals yet</small>
-              </span>
-              <span className="category-score">
-                Reflection <strong>{category.selfReflectionScore}/10</strong>
-              </span>
-            </button>
+              onOpenCategory={onOpenCategory}
+            />
           ))}
         </div>
       </div>
     </section>
   );
+}
+
+function CategoryRow({
+  category,
+  categoryScore,
+  onOpenCategory,
+}: {
+  category: Category;
+  categoryScore?: CategoryScore;
+  onOpenCategory: (categoryId: string) => void;
+}) {
+  const goalScoreLabel =
+    categoryScore?.goalKpiScore === null || categoryScore === undefined
+      ? "No goals yet"
+      : `${formatScore(categoryScore.goalKpiScore)}/10`;
+
+  return (
+    <button
+      className="category-row"
+      key={category.id}
+      onClick={() => onOpenCategory(category.id)}
+      type="button"
+    >
+      <span className="color-dot" style={{ backgroundColor: category.color }} />
+      <span>
+        <strong>
+          <span aria-hidden="true" className="category-icon">
+            {category.icon}
+          </span>
+          {category.name}
+        </strong>
+        <small>Goal/KPI {goalScoreLabel}</small>
+      </span>
+      <span className="category-score">
+        Reflection{" "}
+        <strong>{formatScore(categoryScore?.selfReflectionScore ?? category.selfReflectionScore)}/10</strong>
+      </span>
+    </button>
+  );
+}
+
+function formatScore(score: number) {
+  return score.toFixed(1);
+}
+
+function getFocusCategory(categories: Category[], categoryScores: CategoryScore[]) {
+  return sortCategoriesByScore(categories, categoryScores)[0];
+}
+
+function getAlsoWatchCategories(categories: Category[], categoryScores: CategoryScore[]) {
+  return sortCategoriesByScore(categories, categoryScores).slice(1, 3);
+}
+
+function sortCategoriesByScore(categories: Category[], categoryScores: CategoryScore[]) {
+  const categoryScoreById = new Map(
+    categoryScores.map((score) => [score.categoryId, score.goalKpiScore ?? score.selfReflectionScore]),
+  );
+
+  return [...categories].sort((first, second) => {
+    return (categoryScoreById.get(first.id) ?? 10) - (categoryScoreById.get(second.id) ?? 10);
+  });
 }
 
 function CategoryDetail({
