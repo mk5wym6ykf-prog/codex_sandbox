@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import { getSelectedYear, type Category, type Year } from "./data/model";
 import { calculateYearScores, type CategoryScore } from "./data/scoring";
 import { loadAppData, saveAppData } from "./data/storage";
@@ -139,7 +139,8 @@ function Dashboard({
 
     return {
       category,
-      score: categoryScore?.goalKpiScore ?? categoryScore?.selfReflectionScore ?? category.selfReflectionScore,
+      goalKpiScore: categoryScore?.goalKpiScore ?? null,
+      selfReflectionScore: categoryScore?.selfReflectionScore ?? category.selfReflectionScore,
     };
   });
   const focusCategory = getFocusCategory(categories, yearScores.categoryScores);
@@ -215,7 +216,7 @@ function Dashboard({
         <div className="section-heading row-heading">
           <div>
             <p className="eyebrow">Categories</p>
-            <h2>Life areas</h2>
+            <h2>Attribute overview</h2>
           </div>
           <button className="primary-button" onClick={onAddGoal} type="button">
             Add your first goal
@@ -252,77 +253,111 @@ function LifeWheelPreview({
   overallScore: number;
   scores: {
     category: Category;
-    score: number;
+    goalKpiScore: number | null;
+    selfReflectionScore: number;
   }[];
 }) {
   const center = 150;
-  const chartRadius = 72;
-  const labelRadius = 117;
-  const gradeRadius = 99;
-  const segmentRadius = 132;
-  const segmentLength = 18;
-  const points = scores.map(({ score }, index) => {
-    const angle = getWheelAngle(index, scores.length);
-    const radius = (Math.max(0, Math.min(score, 10)) / 10) * chartRadius;
-
-    return getWheelPoint(center, center, radius, angle);
-  });
+  const hubRadius = 26;
+  const reflectionMaxRadius = 62;
+  const goalBaseRadius = 68;
+  const goalMaxRadius = 108;
+  const badgeRadius = 174;
+  const segmentAngle = 360 / scores.length;
 
   return (
     <div className="wheel-preview" aria-label={`Life wheel score ${formatScore(overallScore)} out of 10`}>
-      <svg className="life-wheel" viewBox="0 0 300 300" role="img">
+      <svg className="life-wheel" viewBox="-104 -104 508 508" role="img">
         <title>Life wheel category scores</title>
-        <circle className="wheel-outer-track" cx={center} cy={center} r={segmentRadius} />
-        <circle className="wheel-chart-boundary" cx={center} cy={center} r={chartRadius} />
-        {[0.25, 0.5, 0.75].map((scale) => (
-          <circle
-            className="wheel-grid-ring"
-            cx={center}
-            cy={center}
-            key={scale}
-            r={chartRadius * scale}
-          />
+        <circle className="wheel-outer-track" cx={center} cy={center} r="116" />
+        {[2, 4, 6, 8, 10].map((score) => (
+          <g key={score}>
+            <circle className="wheel-grid-ring" cx={center} cy={center} r={(score / 10) * goalMaxRadius} />
+            <text className="wheel-scale-label" textAnchor="middle" x={center} y={center - (score / 10) * goalMaxRadius + 4}>
+              {score}
+            </text>
+          </g>
         ))}
-        {scores.map(({ category, score }, index) => {
+        {scores.map(({ category, goalKpiScore, selfReflectionScore }, index) => {
           const angle = getWheelAngle(index, scores.length);
-          const spokeEnd = getWheelPoint(center, center, chartRadius, angle);
-          const labelPoint = getWheelPoint(center, center, labelRadius, angle);
-          const gradePoint = getWheelPoint(center, center, gradeRadius, angle);
-          const segmentStart = getWheelPoint(center, center, segmentRadius - segmentLength, angle);
-          const segmentEnd = getWheelPoint(center, center, segmentRadius, angle);
+          const startAngle = -90 + index * segmentAngle + 1.5;
+          const endAngle = -90 + (index + 1) * segmentAngle - 1.5;
+          const spokeEnd = getWheelPoint(center, center, 116, angle);
+          const labelAnchorPoint = getWheelPoint(center, center, badgeRadius, angle);
+          const labelLines = getWheelLabelLines(category.name);
+          const labelGroupOffset = 20 + (labelLines.length - 1) * 6;
+          const badgePoint = {
+            x: labelAnchorPoint.x,
+            y: labelAnchorPoint.y - labelGroupOffset,
+          };
+          const labelStartY = badgePoint.y + 29;
+          const scorePillY = labelStartY + labelLines.length * 12 + 5;
+          const reflectionRadius = scaleWheelScore(selfReflectionScore, hubRadius, reflectionMaxRadius);
+          const goalRadius =
+            goalKpiScore === null ? goalBaseRadius : scaleWheelScore(goalKpiScore, goalBaseRadius, goalMaxRadius);
+          const wheelScoreLabel =
+            goalKpiScore === null ? `${Math.round(selfReflectionScore)} / 10` : `${Math.round(goalKpiScore)} / 10`;
 
           return (
             <g key={category.id}>
-              <line
-                className="wheel-segment"
-                stroke={category.color}
-                x1={segmentStart.x}
-                x2={segmentEnd.x}
-                y1={segmentStart.y}
-                y2={segmentEnd.y}
+              <path
+                className="wheel-reflection-slice"
+                d={describeWheelSlice(center, center, hubRadius, reflectionRadius, startAngle, endAngle)}
+                fill={category.color}
               />
+              {goalKpiScore === null ? (
+                <path
+                  className="wheel-no-goal-slice"
+                  d={describeWheelSlice(center, center, goalBaseRadius, goalMaxRadius, startAngle, endAngle)}
+                />
+              ) : (
+                <path
+                  className="wheel-goal-slice"
+                  d={describeWheelSlice(center, center, goalBaseRadius, goalRadius, startAngle, endAngle)}
+                  fill={category.color}
+                />
+              )}
               <line className="wheel-spoke" x1={center} x2={spokeEnd.x} y1={center} y2={spokeEnd.y} />
-              <text
-                className="wheel-label"
-                textAnchor="middle"
-                transform={`rotate(${angle + 90} ${labelPoint.x} ${labelPoint.y})`}
-                x={labelPoint.x}
-                y={labelPoint.y}
-              >
-                {getWheelLabel(category.name)}
+              <circle
+                className="wheel-badge"
+                cx={badgePoint.x}
+                cy={badgePoint.y}
+                r="14"
+                style={{ "--category-color": category.color } as CSSProperties}
+              />
+              <text className="wheel-label" textAnchor="middle" x={badgePoint.x} y={labelStartY}>
+                {labelLines.map((line, lineIndex) => (
+                  <tspan dy={lineIndex === 0 ? 0 : 12} key={line} x={badgePoint.x}>
+                    {line}
+                  </tspan>
+                ))}
               </text>
-              <text className="wheel-grade" textAnchor="middle" x={gradePoint.x} y={gradePoint.y}>
-                {getScoreGrade(score)}
+              <rect
+                className={goalKpiScore === null ? "wheel-score-pill reflection" : "wheel-score-pill"}
+                height="15"
+                rx="7.5"
+                style={{ "--category-color": category.color } as CSSProperties}
+                width="42"
+                x={badgePoint.x - 21}
+                y={scorePillY - 8}
+              />
+              <text
+                className="wheel-grade"
+                textAnchor="middle"
+                x={badgePoint.x}
+                y={scorePillY + 3}
+              >
+                {wheelScoreLabel}
               </text>
             </g>
           );
         })}
-        <polygon className="wheel-score-polygon" points={points.map((point) => `${point.x},${point.y}`).join(" ")} />
-        {points.map((point, index) => (
-          <circle className="wheel-score-point" cx={point.x} cy={point.y} key={scores[index].category.id} r="3" />
-        ))}
-        <line className="wheel-center-line" x1={center} x2={center} y1={center - chartRadius} y2={center + chartRadius} />
-        <text className="wheel-center-score" textAnchor="middle" x={center} y={center + 6}>
+        <circle className="wheel-hub-outer" cx={center} cy={center} r="31" />
+        <circle className="wheel-hub-inner" cx={center} cy={center} r="22" />
+        <text className="wheel-center-star" textAnchor="middle" x={center} y={center - 5}>
+          ✦
+        </text>
+        <text className="wheel-center-score" textAnchor="middle" x={center} y={center + 11}>
           {formatScore(overallScore)}
         </text>
       </svg>
@@ -339,31 +374,44 @@ function CategoryRow({
   categoryScore?: CategoryScore;
   onOpenCategory: (categoryId: string) => void;
 }) {
+  const reflectionScore = categoryScore?.selfReflectionScore ?? category.selfReflectionScore;
+  const displayScore = categoryScore?.goalKpiScore ?? reflectionScore;
   const goalScoreLabel =
     categoryScore?.goalKpiScore === null || categoryScore === undefined
       ? "No goals yet"
       : `${formatScore(categoryScore.goalKpiScore)}/10`;
+  const categoryStyle = {
+    "--category-color": category.color,
+    "--category-progress": `${Math.max(0, Math.min(displayScore, 10)) * 10}%`,
+  } as CSSProperties;
 
   return (
     <button
       className="category-row"
       key={category.id}
       onClick={() => onOpenCategory(category.id)}
+      style={categoryStyle}
       type="button"
     >
-      <span className="color-dot" style={{ backgroundColor: category.color }} />
-      <span>
-        <strong>
-          <span aria-hidden="true" className="category-icon">
-            {category.icon}
-          </span>
-          {category.name}
-        </strong>
-        <small>Goal/KPI {goalScoreLabel}</small>
+      <span aria-hidden="true" className="category-icon" title={category.icon}>
+        {getCategoryGlyph(category.icon)}
       </span>
-      <span className="category-score">
-        Reflection{" "}
-        <strong>{formatScore(categoryScore?.selfReflectionScore ?? category.selfReflectionScore)}/10</strong>
+      <span className="category-main">
+        <span className="category-row-top">
+          <strong>{category.name}</strong>
+          <span className="category-score">
+            {categoryScore?.goalKpiScore === null || categoryScore === undefined
+              ? "No goal"
+              : `${Math.round(categoryScore.goalKpiScore)} / 10`}
+          </span>
+        </span>
+        <span className="category-progress-track">
+          <span className="category-progress-fill" />
+        </span>
+        <small>
+          Goal/KPI {goalScoreLabel} · Reflection {formatScore(reflectionScore)}/10 · LV{" "}
+          {Math.max(1, Math.round(reflectionScore / 2))}
+        </small>
       </span>
     </button>
   );
@@ -386,33 +434,65 @@ function getWheelPoint(centerX: number, centerY: number, radius: number, angleDe
   };
 }
 
-function getWheelLabel(name: string) {
-  return name
-    .split(" ")
-    .filter((word) => word !== "&")
-    .slice(0, 2)
-    .map((word) => word.slice(0, 4).toUpperCase())
-    .join(" ");
+function scaleWheelScore(score: number, minRadius: number, maxRadius: number) {
+  const safeScore = Math.max(0, Math.min(score, 10));
+
+  return minRadius + (safeScore / 10) * (maxRadius - minRadius);
 }
 
-function getScoreGrade(score: number) {
-  if (score >= 8.5) {
-    return "A";
-  }
+function describeWheelSlice(
+  centerX: number,
+  centerY: number,
+  innerRadius: number,
+  outerRadius: number,
+  startAngle: number,
+  endAngle: number,
+) {
+  const outerStart = getWheelPoint(centerX, centerY, outerRadius, startAngle);
+  const outerEnd = getWheelPoint(centerX, centerY, outerRadius, endAngle);
+  const innerStart = getWheelPoint(centerX, centerY, innerRadius, startAngle);
+  const innerEnd = getWheelPoint(centerX, centerY, innerRadius, endAngle);
+  const largeArcFlag = endAngle - startAngle <= 180 ? 0 : 1;
 
-  if (score >= 7) {
-    return "B";
-  }
+  return [
+    `M ${outerStart.x} ${outerStart.y}`,
+    `A ${outerRadius} ${outerRadius} 0 ${largeArcFlag} 1 ${outerEnd.x} ${outerEnd.y}`,
+    `L ${innerEnd.x} ${innerEnd.y}`,
+    `A ${innerRadius} ${innerRadius} 0 ${largeArcFlag} 0 ${innerStart.x} ${innerStart.y}`,
+    "Z",
+  ].join(" ");
+}
 
-  if (score >= 5.5) {
-    return "C";
-  }
+function getCategoryGlyph(icon: string) {
+  const iconGlyphs: Record<string, string> = {
+    "book-open": "B",
+    briefcase: "W",
+    compass: "P",
+    "heart-pulse": "H",
+    home: "HM",
+    "party-popper": "F",
+    sparkle: "E",
+    users: "R",
+    wallet: "$",
+  };
 
-  if (score >= 4) {
-    return "D";
-  }
+  return iconGlyphs[icon] ?? icon.slice(0, 2).toUpperCase();
+}
 
-  return "E";
+function getWheelLabelLines(name: string) {
+  const labelLines: Record<string, string[]> = {
+    "Career & Work": ["CAREER"],
+    "Emotional Wellbeing": ["EMOTIONAL"],
+    "Fun & Recreation": ["FUN"],
+    "Health & Energy": ["HEALTH"],
+    "Home & Environment": ["HOME"],
+    "Money & Security": ["MONEY"],
+    "Personal Growth": ["PERSONAL", "GROWTH"],
+    "Purpose & Meaning": ["PURPOSE"],
+    "Relationships & Connection": ["RELATIONSHIPS"],
+  };
+
+  return labelLines[name] ?? [name.split(" ")[0].toUpperCase()];
 }
 
 function getFocusCategory(categories: Category[], categoryScores: CategoryScore[]) {
