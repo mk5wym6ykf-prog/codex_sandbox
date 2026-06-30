@@ -182,44 +182,44 @@ Track which numbered prompts from `prompt_plan.md` have been run.
 
 ## 6. Two-Ring Life Wheel
 
-- [ ] Create wheel component.
-- [ ] Use SVG for the wheel.
-- [ ] Render one slice per category.
-- [ ] Render outer ring for goal/KPI score.
-- [ ] Render inner ring for self-reflection score.
-- [ ] Show light no-goals state in outer ring when needed.
-- [ ] Use fixed category colors.
+- [x] Create wheel component.
+- [x] Use SVG for the wheel.
+- [x] Render one slice per category.
+- [x] Render outer ring for goal/KPI score.
+- [x] Render inner ring for self-reflection score.
+- [x] Show light no-goals state in outer ring when needed.
+- [x] Use fixed category colors.
 - [ ] Make slices clickable.
 - [ ] Make slices keyboard accessible if practical.
 - [ ] Add accessible labels for wheel slices.
-- [ ] Ensure category list duplicates key wheel information.
-- [ ] Avoid using color as the only indicator.
-- [ ] Confirm wheel works with 9 default categories.
+- [x] Ensure category list duplicates key wheel information.
+- [x] Avoid using color as the only indicator.
+- [x] Confirm wheel works with 9 default categories.
 - [ ] Confirm wheel works after categories are reordered.
 - [ ] Confirm wheel works on mobile width.
 - [ ] Confirm wheel does not cause horizontal scrolling.
-- [ ] Run build or type-check.
+- [x] Run build or type-check. `npm run build` passed.
 
 ## 7. Category Detail
 
-- [ ] Show category name.
-- [ ] Show category icon.
-- [ ] Show category color.
-- [ ] Show goal/KPI score.
-- [ ] Show self-reflection score.
+- [x] Show category name.
+- [x] Show category icon.
+- [x] Show category color.
+- [x] Show goal/KPI score.
+- [x] Show self-reflection score.
 - [ ] Allow editing self-reflection score if this step includes it.
-- [ ] Show short focus reason when applicable.
+- [x] Show short focus reason when applicable.
 - [ ] List active goals first.
 - [ ] List paused goals after active goals.
 - [ ] Put completed goals in collapsed Wins section.
 - [ ] Hide archived goals by default.
 - [ ] Add toggle to show archived goals.
-- [ ] Show no-goals state.
-- [ ] Add button to create a goal in this category.
-- [ ] Add simple back navigation to Dashboard.
+- [x] Show no-goals state.
+- [x] Add button to create a goal in this category.
+- [x] Add simple back navigation to Dashboard.
 - [ ] Add placeholders for quick update controls if not built yet.
 - [ ] Confirm read-only behavior can be shown for locked past years later.
-- [ ] Run build or type-check.
+- [x] Run build or type-check. `npm run build` passed.
 
 ## 8. Metric Goal Creation
 

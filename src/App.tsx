@@ -381,6 +381,7 @@ function CategoryRow({
     categoryScore?.goalKpiScore === null || categoryScore === undefined
       ? "No goals yet"
       : `${formatScore(categoryScore.goalKpiScore)}/10`;
+  const hasNoGoalScore = categoryScore?.goalKpiScore === null || categoryScore === undefined;
   const categoryStyle = {
     "--category-color": category.color,
     "--category-progress": `${Math.max(0, Math.min(displayScore, 10)) * 10}%`,
@@ -394,7 +395,11 @@ function CategoryRow({
       style={categoryStyle}
       type="button"
     >
-      <span aria-hidden="true" className="category-icon" title={category.icon}>
+      <span
+        aria-hidden="true"
+        className={hasNoGoalScore ? "category-icon no-goals" : "category-icon"}
+        title={category.icon}
+      >
         {getCategoryGlyph(category.icon)}
       </span>
       <span className="category-main">
@@ -543,9 +548,14 @@ function CategoryDetail({
       <div className="content-panel">
         <div className="section-heading">
           <p className="eyebrow">Category Detail</p>
-          <h2 id="category-title">
-            <span aria-hidden="true" className="category-icon large">
-              {category.icon}
+          <h2 className="category-detail-title" id="category-title">
+            <span
+              aria-hidden="true"
+              className="category-icon large no-goals"
+              style={{ "--category-color": category.color } as CSSProperties}
+              title={category.icon}
+            >
+              {getCategoryGlyph(category.icon)}
             </span>
             {category.name}
           </h2>
