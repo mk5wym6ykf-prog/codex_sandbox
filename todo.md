@@ -189,9 +189,9 @@ Track which numbered prompts from `prompt_plan.md` have been run.
 - [x] Render inner ring for self-reflection score.
 - [x] Show light no-goals state in outer ring when needed.
 - [x] Use fixed category colors.
-- [ ] Make slices clickable.
-- [ ] Make slices keyboard accessible if practical.
-- [ ] Add accessible labels for wheel slices.
+- [x] Make slices clickable.
+- [x] Make slices keyboard accessible if practical.
+- [x] Add accessible labels for wheel slices.
 - [x] Ensure category list duplicates key wheel information.
 - [x] Avoid using color as the only indicator.
 - [x] Confirm wheel works with 9 default categories.
@@ -564,17 +564,17 @@ Track which numbered prompts from `prompt_plan.md` have been run.
 
 ## 21. Accessibility Basics
 
-- [ ] Category list repeats wheel information.
-- [ ] Category list shows category name.
-- [ ] Category list shows goal/KPI score.
-- [ ] Category list shows self-reflection score.
+- [x] Category list repeats wheel information.
+- [x] Category list shows category name.
+- [x] Category list shows goal/KPI score.
+- [x] Category list shows self-reflection score.
 - [ ] Category list shows attention markers.
-- [ ] Wheel slices are clickable or tappable.
-- [ ] Category list items also open Category Detail.
+- [x] Wheel slices are clickable or tappable.
+- [x] Category list items also open Category Detail.
 - [ ] Buttons have clear labels.
 - [ ] Inputs have visible labels.
 - [ ] Text contrast is readable.
-- [ ] Status is not communicated by color alone.
+- [x] Status is not communicated by color alone.
 - [ ] Keyboard navigation reaches main actions.
 - [ ] Focus states are visible.
 - [ ] Forms show understandable validation messages.

@@ -1,4 +1,9 @@
-import { useEffect, useState, type CSSProperties } from "react";
+import { useEffect, useState, type CSSProperties, type KeyboardEvent } from "react";
+import {
+  getGoalKpiWheelRadius,
+  getSelfReflectionWheelRadius,
+  LIFE_WHEEL_RADII,
+} from "./data/lifeWheel";
 import { getSelectedYear, type Category, type Year } from "./data/model";
 import { calculateYearScores, type CategoryScore } from "./data/scoring";
 import { loadAppData, saveAppData } from "./data/storage";
@@ -165,7 +170,11 @@ function Dashboard({
           </p>
         </div>
         <div className="score-layout">
-          <LifeWheelPreview overallScore={yearScores.overallLifeScore} scores={wheelScores} />
+          <LifeWheelPreview
+            onOpenCategory={onOpenCategory}
+            overallScore={yearScores.overallLifeScore}
+            scores={wheelScores}
+          />
           <div className="score-summary">
             <p className="score-label">Overall life score</p>
             <strong>{formatScore(yearScores.overallLifeScore)} / 10</strong>
@@ -247,9 +256,11 @@ function Dashboard({
 }
 
 function LifeWheelPreview({
+  onOpenCategory,
   overallScore,
   scores,
 }: {
+  onOpenCategory: (categoryId: string) => void;
   overallScore: number;
   scores: {
     category: Category;
@@ -258,10 +269,7 @@ function LifeWheelPreview({
   }[];
 }) {
   const center = 250;
-  const hubRadius = 26;
-  const reflectionMaxRadius = 62;
-  const goalBaseRadius = 68;
-  const goalMaxRadius = 108;
+  const { goalBaseRadius, goalMaxRadius, hubRadius } = LIFE_WHEEL_RADII;
   const badgeRadius = 174;
   const segmentAngle = 360 / scores.length;
 
@@ -293,14 +301,27 @@ function LifeWheelPreview({
           const spokeEnd = getWheelPoint(center, center, 116, spokeAngle);
           const labelStartY = badgePoint.y + 29;
           const scorePillY = labelStartY + labelLines.length * 12 + 5;
-          const reflectionRadius = scaleWheelScore(selfReflectionScore, hubRadius, reflectionMaxRadius);
+          const reflectionRadius = getSelfReflectionWheelRadius(selfReflectionScore);
           const goalRadius =
-            goalKpiScore === null ? goalBaseRadius : scaleWheelScore(goalKpiScore, goalBaseRadius, goalMaxRadius);
+            goalKpiScore === null ? goalBaseRadius : getGoalKpiWheelRadius(goalKpiScore);
           const wheelScoreLabel =
             goalKpiScore === null ? `${Math.round(selfReflectionScore)} / 10` : `${Math.round(goalKpiScore)} / 10`;
+          const wheelSliceLabel = getWheelSliceLabel(category, goalKpiScore, selfReflectionScore);
 
           return (
-            <g key={category.id}>
+            <g
+              aria-label={wheelSliceLabel}
+              className="wheel-category-slice"
+              key={category.id}
+              onClick={() => onOpenCategory(category.id)}
+              onKeyDown={(event) => handleWheelSliceKeyDown(event, category.id, onOpenCategory)}
+              role="button"
+              tabIndex={0}
+            >
+              <path
+                className="wheel-hit-area"
+                d={describeWheelSlice(center, center, hubRadius, goalMaxRadius, startAngle, endAngle)}
+              />
               <path
                 className="wheel-reflection-slice"
                 d={describeWheelSlice(center, center, hubRadius, reflectionRadius, startAngle, endAngle)}
@@ -364,6 +385,19 @@ function LifeWheelPreview({
       </svg>
     </div>
   );
+}
+
+function handleWheelSliceKeyDown(
+  event: KeyboardEvent<SVGGElement>,
+  categoryId: string,
+  onOpenCategory: (categoryId: string) => void,
+) {
+  if (event.key !== "Enter" && event.key !== " ") {
+    return;
+  }
+
+  event.preventDefault();
+  onOpenCategory(categoryId);
 }
 
 function CategoryRow({
@@ -444,10 +478,17 @@ function getAngleBetweenPoints(startX: number, startY: number, endX: number, end
   return (Math.atan2(endY - startY, endX - startX) * 180) / Math.PI;
 }
 
-function scaleWheelScore(score: number, minRadius: number, maxRadius: number) {
-  const safeScore = Math.max(0, Math.min(score, 10));
+function getWheelSliceLabel(
+  category: Category,
+  goalKpiScore: number | null,
+  selfReflectionScore: number,
+) {
+  const goalScoreText =
+    goalKpiScore === null ? "No goals yet for goal progress" : `Goal progress ${formatScore(goalKpiScore)} out of 10`;
 
-  return minRadius + (safeScore / 10) * (maxRadius - minRadius);
+  return `${category.name}. ${goalScoreText}. Self-reflection ${formatScore(
+    selfReflectionScore,
+  )} out of 10. Open category detail.`;
 }
 
 function describeWheelSlice(

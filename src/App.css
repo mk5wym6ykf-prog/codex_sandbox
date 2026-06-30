@@ -197,6 +197,27 @@ button {
   pointer-events: none;
 }
 
+.wheel-category-slice {
+  cursor: pointer;
+  outline: none;
+}
+
+.wheel-hit-area {
+  fill: transparent;
+  pointer-events: all;
+}
+
+.wheel-category-slice:hover .wheel-goal-slice,
+.wheel-category-slice:hover .wheel-reflection-slice,
+.wheel-category-slice:focus-visible .wheel-goal-slice,
+.wheel-category-slice:focus-visible .wheel-reflection-slice {
+  opacity: 1;
+}
+
+.wheel-category-slice:focus-visible .wheel-badge {
+  stroke-width: 3;
+}
+
 .wheel-reflection-slice {
   opacity: 0.34;
   stroke: #ffffff;
