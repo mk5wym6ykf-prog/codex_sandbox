@@ -243,10 +243,11 @@ button {
 }
 
 .wheel-grade {
+  alignment-baseline: middle;
   dominant-baseline: middle;
   fill: #ffffff;
-  font-size: 0.46rem;
-  font-weight: 800;
+  font-size: 0.52rem;
+  font-weight: 900;
 }
 
 .wheel-hub-outer {

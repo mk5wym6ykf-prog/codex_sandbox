@@ -262,12 +262,12 @@ function LifeWheelPreview({
   const reflectionMaxRadius = 62;
   const goalBaseRadius = 68;
   const goalMaxRadius = 108;
-  const badgeRadius = 174;
+  const badgeRadius = 190;
   const segmentAngle = 360 / scores.length;
 
   return (
     <div className="wheel-preview" aria-label={`Life wheel score ${formatScore(overallScore)} out of 10`}>
-      <svg className="life-wheel" viewBox="-104 -104 508 508" role="img">
+      <svg className="life-wheel" viewBox="-124 -124 548 548" role="img">
         <title>Life wheel category scores</title>
         <circle className="wheel-outer-track" cx={center} cy={center} r="116" />
         {[2, 4, 6, 8, 10].map((score) => (
@@ -283,13 +283,8 @@ function LifeWheelPreview({
           const startAngle = -90 + index * segmentAngle + 1.5;
           const endAngle = -90 + (index + 1) * segmentAngle - 1.5;
           const spokeEnd = getWheelPoint(center, center, 116, angle);
-          const labelAnchorPoint = getWheelPoint(center, center, badgeRadius, angle);
+          const badgePoint = getWheelPoint(center, center, badgeRadius, angle);
           const labelLines = getWheelLabelLines(category.name);
-          const labelGroupOffset = 20 + (labelLines.length - 1) * 6;
-          const badgePoint = {
-            x: labelAnchorPoint.x,
-            y: labelAnchorPoint.y - labelGroupOffset,
-          };
           const labelStartY = badgePoint.y + 29;
           const scorePillY = labelStartY + labelLines.length * 12 + 5;
           const reflectionRadius = scaleWheelScore(selfReflectionScore, hubRadius, reflectionMaxRadius);
@@ -334,18 +329,18 @@ function LifeWheelPreview({
               </text>
               <rect
                 className={goalKpiScore === null ? "wheel-score-pill reflection" : "wheel-score-pill"}
-                height="15"
-                rx="7.5"
+                height="18"
+                rx="9"
                 style={{ "--category-color": category.color } as CSSProperties}
-                width="42"
-                x={badgePoint.x - 21}
-                y={scorePillY - 8}
+                width="48"
+                x={badgePoint.x - 24}
+                y={scorePillY - 9}
               />
               <text
                 className="wheel-grade"
                 textAnchor="middle"
                 x={badgePoint.x}
-                y={scorePillY + 3}
+                y={scorePillY}
               >
                 {wheelScoreLabel}
               </text>
