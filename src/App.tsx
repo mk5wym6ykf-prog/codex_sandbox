@@ -257,17 +257,17 @@ function LifeWheelPreview({
     selfReflectionScore: number;
   }[];
 }) {
-  const center = 150;
+  const center = 250;
   const hubRadius = 26;
   const reflectionMaxRadius = 62;
   const goalBaseRadius = 68;
   const goalMaxRadius = 108;
-  const badgeRadius = 190;
+  const badgeRadius = 174;
   const segmentAngle = 360 / scores.length;
 
   return (
     <div className="wheel-preview" aria-label={`Life wheel score ${formatScore(overallScore)} out of 10`}>
-      <svg className="life-wheel" viewBox="-124 -124 548 548" role="img">
+      <svg className="life-wheel" viewBox="0 0 500 500" role="img">
         <title>Life wheel category scores</title>
         <circle className="wheel-outer-track" cx={center} cy={center} r="116" />
         {[2, 4, 6, 8, 10].map((score) => (
@@ -282,9 +282,15 @@ function LifeWheelPreview({
           const angle = getWheelAngle(index, scores.length);
           const startAngle = -90 + index * segmentAngle + 1.5;
           const endAngle = -90 + (index + 1) * segmentAngle - 1.5;
-          const spokeEnd = getWheelPoint(center, center, 116, angle);
-          const badgePoint = getWheelPoint(center, center, badgeRadius, angle);
+          const labelAnchorPoint = getWheelPoint(center, center, badgeRadius, angle);
           const labelLines = getWheelLabelLines(category.name);
+          const labelGroupOffset = 14.5 + labelLines.length * 6;
+          const badgePoint = {
+            x: labelAnchorPoint.x,
+            y: labelAnchorPoint.y - labelGroupOffset,
+          };
+          const spokeAngle = getAngleBetweenPoints(center, center, badgePoint.x, badgePoint.y);
+          const spokeEnd = getWheelPoint(center, center, 116, spokeAngle);
           const labelStartY = badgePoint.y + 29;
           const scorePillY = labelStartY + labelLines.length * 12 + 5;
           const reflectionRadius = scaleWheelScore(selfReflectionScore, hubRadius, reflectionMaxRadius);
@@ -427,6 +433,10 @@ function getWheelPoint(centerX: number, centerY: number, radius: number, angleDe
     x: centerX + radius * Math.cos(angleRadians),
     y: centerY + radius * Math.sin(angleRadians),
   };
+}
+
+function getAngleBetweenPoints(startX: number, startY: number, endX: number, endY: number) {
+  return (Math.atan2(endY - startY, endX - startX) * 180) / Math.PI;
 }
 
 function scaleWheelScore(score: number, minRadius: number, maxRadius: number) {
